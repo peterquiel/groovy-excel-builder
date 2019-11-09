@@ -34,21 +34,23 @@ class ExcelBuilder {
      * Builds an excel document and sends the data to an output stream. The output stream is NOT closed.
      *
      * @param outputStream An output stream to push data onto
+     * @param template A excel file that is used a template, if null a new workbook will be created.
      * @param callable The closure to build the document
      */
-    static void output(OutputStream outputStream, @DelegatesTo(strategy = Closure.DELEGATE_FIRST, value = Workbook) Closure callable) {
-        XSSFWorkbook wb = build(callable)
+    static void output(InputStream template = null, OutputStream outputStream, @DelegatesTo(strategy = Closure.DELEGATE_FIRST, value = Workbook) Closure callable) {
+        XSSFWorkbook wb = build(template, callable)
         wb.write(outputStream)
     }
 
     /**
      * Builds an excel document
      *
+     * @param template A excel file that is used a template, if null a new workbook will be created.
      * @param callable The closure to build the document
      * @return The native workbook
      */
-    static XSSFWorkbook build(@DelegatesTo(strategy = Closure.DELEGATE_FIRST, value = Workbook) Closure callable) {
-        XSSFWorkbook wb = new XSSFWorkbook()
+    static XSSFWorkbook build(InputStream template = null, @DelegatesTo(strategy = Closure.DELEGATE_FIRST, value = Workbook) Closure callable) {
+        XSSFWorkbook wb = template == null ? new XSSFWorkbook() : new XSSFWorkbook(template)
         callable.resolveStrategy = Closure.DELEGATE_FIRST
         callable.delegate = new Workbook(wb)
         if (callable.maximumNumberOfParameters == 1) {

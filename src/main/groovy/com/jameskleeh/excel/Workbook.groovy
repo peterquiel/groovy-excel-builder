@@ -52,7 +52,9 @@ class Workbook {
      * @return The native sheet object
      */
     XSSFSheet sheet(String name, Map options, @DelegatesTo(strategy = Closure.DELEGATE_FIRST, value = Sheet) Closure callable) {
-        handleSheet(wb.createSheet(WorkbookUtil.createSafeSheetName(name)), options, callable)
+        XSSFSheet sheet = wb.getSheet(name)
+        sheet = sheet ?: wb.createSheet(WorkbookUtil.createSafeSheetName(name))
+        handleSheet(sheet, options, callable)
     }
 
     /**
